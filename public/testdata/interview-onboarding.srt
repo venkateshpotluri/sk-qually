@@ -1,0 +1,32 @@
+1
+00:00:00,000 --> 00:00:10,000
+Interviewer: Welcome, and thanks for making time today. Could you start by telling me how you first set up the product?
+
+2
+00:00:10,000 --> 00:00:20,000
+P2: Sure. The install itself was quick, but honestly the first-run screen confused me: three buttons, no explanation.
+
+3
+00:00:20,000 --> 00:00:30,000
+Interviewer: What did you expect to see instead?
+
+4
+00:00:30,000 --> 00:00:40,000
+P2: A single obvious next step. I want a guided path, something like "import your data, then invite your team".
+
+5
+00:00:40,000 --> 00:00:50,000
+Interviewer: You mentioned inviting a team. How did that go when you tried it?
+
+6
+00:00:50,000 --> 00:01:00,000
+P2: That part was actually delightful. The invite link worked on the first try and my colleague was in within a minute.
+
+7
+00:01:00,000 --> 00:01:10,000
+Interviewer: Anything that almost made you give up?
+
+8
+00:01:10,000 --> 00:01:20,000
+P2: The settings page. It felt like a maze, and I still cannot find where notifications live. That frustrated me a lot.
+

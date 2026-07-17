@@ -1,0 +1,8 @@
+[00:00:00] Moderator: Let's go around the table. What is one thing the current tool does well?
+[00:00:10] Riley: Search is fast, and I trust the results. That is rare.
+[00:00:20] Sam: Agreed on search. But exporting anything takes me five clicks minimum, and that gets old.
+[00:00:30] Moderator: Sam, walk me through where those clicks happen.
+[00:00:40] Sam: Menu, then export, then a format screen, then a confirm screen, then a download button. Feels like a form from 2009.
+[00:00:50] Priya: For me the mobile view is the pain point: half the buttons are off screen on my phone.
+[00:01:00] Moderator: If you could fix only one of these before the next release, which would it be?
+[00:01:10] Riley: Mobile. Search already works; give Priya her buttons back.
