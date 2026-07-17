@@ -26,9 +26,12 @@ press Enter — you should immediately hear three beeps (or see the digit 3).
 
 ## Other transcripts
 
-- **interview-onboarding.srt** — realistic 8-cue interview on the same
-  10-second grid (0:00–1:20), with `Interviewer:` / `P2:` speaker prefixes.
-  Also works with the audio/video above for seek testing.
+- **interview-onboarding.srt** — realistic 8-cue interview with
+  `Interviewer:` / `P2:` speaker prefixes. Its cues sit on the same 10-second
+  grid, so with the tone-check audio attached, cue *n* still starts exactly at
+  *n* beeps. The transcript ends at 1:20 while the audio runs to 2:00; the
+  cue-free final 40 seconds deliberately test the "media longer than
+  transcript" case (highlight should clear, nothing announced).
 - **focus-group-notes.txt** — timed plaintext (`[00:00:10]` style) with four
   speakers; exercises the plaintext timestamp and speaker parsing.
 - **reflection-memo.txt** — untimed plaintext paragraphs; exercises the
