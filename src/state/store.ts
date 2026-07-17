@@ -244,7 +244,11 @@ class Store {
   flushSave(): void {
     clearTimeout(this.saveTimer);
     this.saveTimer = undefined;
-    if (this.project) void db.saveProject(this.project);
+    if (this.project) {
+      db.saveProject(this.project).catch((err) => {
+        console.error('Qually: autosave failed', err);
+      });
+    }
   }
 }
 
@@ -252,3 +256,6 @@ export const store = new Store();
 
 // Make sure pending edits hit IndexedDB even if the tab closes quickly.
 window.addEventListener('pagehide', () => store.flushSave());
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') store.flushSave();
+});

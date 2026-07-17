@@ -176,6 +176,18 @@ test('work persists across a reload and can be exported', async ({ page }) => {
   expect(download.suggestedFilename()).toMatch(/Persistence-check\.qually\.json/);
 });
 
+test('skip link moves focus to main content without triggering the router', async ({ page }) => {
+  await setUpProject(page, 'Skip link check');
+  const urlBefore = page.url();
+  const skipLink = page.getByRole('link', { name: 'Skip to main content' });
+  await skipLink.focus();
+  await page.keyboard.press('Enter');
+  // Still on the coding view — the skip link must not be treated as a route.
+  await expect(page.getByRole('listbox', { name: 'Transcript' })).toBeVisible();
+  expect(page.url()).toBe(urlBefore);
+  await expect(page.locator('main')).toBeFocused();
+});
+
 test('single-letter shortcuts can be disabled (WCAG 2.1.4)', async ({ page }) => {
   await setUpProject(page, 'Shortcut setting');
   await createCode(page, 'Emotion');

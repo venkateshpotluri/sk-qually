@@ -253,13 +253,27 @@ export async function renderCoding(main: HTMLElement, projectId: string, docId: 
 
   const videoSection = el('section', { class: 'video-panel', 'aria-labelledby': 'video-h' });
 
+  // Blob URLs for the video and its captions track; revoked on rebuild and
+  // when navigating away so long sessions don't accumulate them.
+  const objectUrls: string[] = [];
+  const trackUrl = (blob: Blob | File): string => {
+    const url = URL.createObjectURL(blob);
+    objectUrls.push(url);
+    return url;
+  };
+  const revokeObjectUrls = (): void => {
+    while (objectUrls.length > 0) URL.revokeObjectURL(objectUrls.pop()!);
+  };
+  controller.signal.addEventListener('abort', revokeObjectUrls);
+
   function buildVideoSection(): void {
     videoSection.replaceChildren(el('h2', { id: 'video-h', class: 'panel-heading' }, ['Video']));
     const file = store.videoFor(doc.id);
+    revokeObjectUrls();
 
     if (file) {
       video = el('video', { controls: true, class: 'video-player', preload: 'metadata' });
-      video.src = URL.createObjectURL(file);
+      video.src = trackUrl(file);
       const vtt = segmentsToVtt(doc.segments);
       if (vtt) {
         const track = el('track', {
@@ -268,7 +282,7 @@ export async function renderCoding(main: HTMLElement, projectId: string, docId: 
           srclang: 'en',
           default: true,
         });
-        track.src = URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' }));
+        track.src = trackUrl(new Blob([vtt], { type: 'text/vtt' }));
         video.append(track);
       }
       video.addEventListener('timeupdate', () => highlightPlayingSegment());
@@ -401,6 +415,7 @@ export async function renderCoding(main: HTMLElement, projectId: string, docId: 
     tree.render(store.project.codes);
     announce(`Created code ${codePathLabel(code, store.project.codes)}.`);
     updateAllOptions();
+    restoreTreeFocus();
   }
 
   async function editCodeFlow(codeId: string): Promise<void> {
@@ -419,6 +434,18 @@ export async function renderCoding(main: HTMLElement, projectId: string, docId: 
     tree.render(store.project.codes);
     announce(`Updated code ${codePathLabel(code, store.project.codes)}.`);
     updateAllOptions();
+    restoreTreeFocus();
+  }
+
+  /**
+   * Re-rendering the tree can destroy the element the closing dialog returns
+   * focus to (e.g. when a code dialog was opened with E or N on a tree item).
+   * If focus fell back to <body>, put it on the tree again.
+   */
+  function restoreTreeFocus(): void {
+    setTimeout(() => {
+      if (document.activeElement === document.body) tree.focus();
+    }, 0);
   }
 
   async function deleteCodeFlow(codeId: string): Promise<void> {

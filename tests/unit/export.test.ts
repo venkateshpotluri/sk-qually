@@ -37,6 +37,33 @@ describe('projectToCsv', () => {
   });
 });
 
+describe('projectToCsv row order', () => {
+  it('orders rows by document and segment position, not assignment time', () => {
+    const multi: Project = {
+      ...project,
+      documents: [
+        {
+          id: 'd1',
+          title: 'Interview 1',
+          format: 'vtt',
+          segments: [
+            { id: 's1', startMs: 1000, text: 'first segment' },
+            { id: 's2', startMs: 2000, text: 'second segment' },
+          ],
+        },
+      ],
+      // Deliberately assigned in reverse order.
+      assignments: [
+        { documentId: 'd1', segmentId: 's2', codeId: 'c1', assignedAt: '2026-01-01T00:00:00Z' },
+        { documentId: 'd1', segmentId: 's1', codeId: 'c1', assignedAt: '2026-01-02T00:00:00Z' },
+      ],
+    };
+    const lines = projectToCsv(multi).trim().split('\r\n');
+    expect(lines[1]).toContain('first segment');
+    expect(lines[2]).toContain('second segment');
+  });
+});
+
 describe('project file round-trip', () => {
   it('serializes and deserializes losslessly', () => {
     const restored = deserializeProject(serializeProject(project));

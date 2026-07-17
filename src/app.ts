@@ -74,6 +74,13 @@ export function startApp(root: HTMLElement): void {
 
   const skipLink = el('a', { class: 'skip-link', href: '#main' }, ['Skip to main content']);
   main = el('main', { id: 'main' });
+  // The app routes on the URL hash, so following #main would navigate instead
+  // of skipping — move focus directly and leave the hash alone.
+  skipLink.addEventListener('click', (event) => {
+    event.preventDefault();
+    main.setAttribute('tabindex', '-1');
+    main.focus();
+  });
   root.append(skipLink, main);
   mountLiveRegion(root);
 
