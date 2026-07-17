@@ -176,6 +176,47 @@ test('work persists across a reload and can be exported', async ({ page }) => {
   expect(download.suggestedFilename()).toMatch(/Persistence-check\.qually\.json/);
 });
 
+test('aggregates view replaces coding, filters by level, and closes', async ({ page }) => {
+  await setUpProject(page, 'Aggregates');
+  await createCode(page, 'Emotion');
+  await createCode(page, 'positive', 'Emotion');
+
+  const listbox = page.getByRole('listbox', { name: 'Transcript' });
+  const options = listbox.getByRole('option');
+  await options.first().click();
+  await page.getByRole('treeitem', { name: 'positive' }).click();
+  await options.nth(1).click();
+  await page.getByRole('treeitem', { name: 'positive' }).click();
+
+  await page.getByRole('button', { name: 'View aggregates' }).click();
+
+  // The table and the coding panels are never visible at the same time.
+  await expect(page.getByRole('heading', { name: 'Code aggregates' })).toBeVisible();
+  await expect(listbox).toBeHidden();
+  await expect(page.getByRole('tree', { name: 'Code tree' })).toBeHidden();
+
+  const table = page.getByRole('table');
+  await expect(table.getByRole('rowheader', { name: 'Emotion: positive' })).toBeVisible();
+  const positiveRow = table.getByRole('row', { name: /Emotion: positive/ });
+  await expect(positiveRow.getByRole('cell').nth(1)).toHaveText('2');
+
+  // The parent aggregates its subtree.
+  const emotionRow = table.getByRole('row', { name: /^Emotion 1/ });
+  await expect(emotionRow.getByRole('cell').nth(1)).toHaveText('0 (2 with sub-codes)');
+
+  await expectNoAxeViolations(page, 'aggregates view');
+
+  // Level filter narrows the rows.
+  await page.getByLabel('Show levels').selectOption('1');
+  await expect(table.getByRole('rowheader', { name: 'Emotion: positive' })).toHaveCount(0);
+  await expect(table.getByRole('rowheader', { name: 'Emotion', exact: true })).toBeVisible();
+
+  // Close restores the coding view and returns focus to the opener.
+  await page.getByRole('button', { name: 'Close aggregates' }).click();
+  await expect(listbox).toBeVisible();
+  await expect(page.getByRole('button', { name: 'View aggregates' })).toBeFocused();
+});
+
 test('skip link moves focus to main content without triggering the router', async ({ page }) => {
   await setUpProject(page, 'Skip link check');
   const urlBefore = page.url();

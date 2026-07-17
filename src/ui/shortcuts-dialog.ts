@@ -16,7 +16,7 @@ const GROUPS: ShortcutGroup[] = [
     title: 'Anywhere',
     rows: [
       { keys: '?', action: 'Show this shortcuts list' },
-      { keys: 'Escape', action: 'Close a dialog' },
+      { keys: 'Escape', action: 'Close a dialog or the aggregates view' },
     ],
   },
   {

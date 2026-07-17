@@ -102,6 +102,11 @@
   box-sizing: border-box;
 }
 
+/* Author display rules (e.g. display: grid) must never override [hidden]. */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   font-family: var(--font);
@@ -634,6 +639,57 @@ input[type='file'] {
 }
 .code-tree li[aria-checked='true'] > .tree-row .code-name {
   font-weight: 650;
+}
+
+/* ---------- aggregates view ---------- */
+
+.aggregates-panel {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem 1.4rem;
+  box-shadow: var(--shadow);
+  max-width: 56rem;
+}
+.aggregates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.aggregates-header h2 {
+  margin: 0;
+}
+.aggregates-table-holder {
+  overflow-x: auto;
+  margin-top: 0.75rem;
+}
+.aggregates-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.aggregates-table th,
+.aggregates-table td {
+  text-align: left;
+  padding: 0.45rem 0.9rem 0.45rem 0;
+  border-top: 1px solid var(--border);
+  vertical-align: top;
+}
+.aggregates-table thead th {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-top: none;
+}
+.aggregates-table tbody th {
+  font-weight: 575;
+}
+.aggregates-table td {
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- dialogs ---------- */

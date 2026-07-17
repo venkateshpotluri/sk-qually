@@ -20,6 +20,10 @@ Qually is a qualitative coding tool — in the spirit of NVivo or Dedoose — bu
   announces color names (e.g. "ocean blue") to screen-reader users too.
 - **Video sync:** click or press Enter on a segment to play the video from that
   timestamp; captions are generated from the transcript automatically.
+- **Aggregates:** a "View aggregates" table shows how many segments each code is
+  assigned to (current document and project-wide, with sub-code rollups),
+  filterable by hierarchy level. It replaces the coding view while open so the
+  two are never on screen together.
 - **Keyboard-first:** full keyboard operation, `?` opens the shortcuts list, and all
   single-letter shortcuts can be disabled (WCAG 2.1.4).
 - **Privacy & persistence:** work autosaves to the browser's IndexedDB only. Export /

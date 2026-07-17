@@ -1,6 +1,7 @@
 import { navigate } from '../../app';
 import { store } from '../../state/store';
 import type { Segment, TranscriptDoc } from '../../types';
+import { aggregateRows, maxLevel } from '../../lib/aggregates';
 import { segmentLabel } from '../../lib/announce';
 import { codePathLabel, effectiveColorId } from '../../lib/codes';
 import { paletteColor } from '../../lib/palette';
@@ -51,6 +52,9 @@ export async function renderCoding(main: HTMLElement, projectId: string, docId: 
     navigate({ screen: 'doc', projectId, docId: switcher.value });
   });
 
+  const aggregatesBtn = el('button', { type: 'button', class: 'btn btn-small' }, ['View aggregates']);
+  aggregatesBtn.addEventListener('click', () => openAggregates());
+
   const settingsBtn = el('button', { type: 'button', class: 'btn btn-small' }, ['Settings…']);
   settingsBtn.addEventListener('click', () => openSettingsDialog(() => updateAllOptions()));
   const helpBtn = el('button', { type: 'button', class: 'btn btn-small' }, [
@@ -73,6 +77,7 @@ export async function renderCoding(main: HTMLElement, projectId: string, docId: 
         el('label', { for: switcherId }, ['Document']),
         switcher,
       ]),
+      aggregatesBtn,
       settingsBtn,
       helpBtn,
     ]),
@@ -516,20 +521,130 @@ export async function renderCoding(main: HTMLElement, projectId: string, docId: 
   updateEmptyCodesNote();
   updateCodingTarget();
 
+  // ---------- aggregates view ----------
+  // Replaces the coding layout entirely while open: the table and the coding
+  // panels are never on screen at the same time.
+
+  const aggregatesHeading = el('h2', { tabindex: '-1' }, ['Code aggregates']);
+  const levelSelectId = 'aggregates-level';
+  const levelSelect = el('select', { id: levelSelectId });
+  const aggregatesTableHolder = el('div', { class: 'aggregates-table-holder' });
+  const closeAggregatesBtn = el('button', { type: 'button', class: 'btn' }, ['Close aggregates']);
+
+  const aggregatesSection = el(
+    'section',
+    { class: 'aggregates-panel', 'aria-labelledby': 'aggregates-h', hidden: true },
+    [
+      el('div', { class: 'aggregates-header' }, [aggregatesHeading, closeAggregatesBtn]),
+      el('p', { class: 'muted' }, [
+        'How many segments each code is assigned to, in this document and across the whole project. ',
+        'Counts in parentheses include the code’s sub-codes.',
+      ]),
+      el('div', { class: 'field field-inline' }, [
+        el('label', { for: levelSelectId }, ['Show levels']),
+        levelSelect,
+      ]),
+      aggregatesTableHolder,
+    ],
+  );
+  aggregatesHeading.id = 'aggregates-h';
+
+  function renderAggregatesTable(): void {
+    if (!store.project) return;
+    const rows = aggregateRows(store.project, doc.id);
+    const filter = levelSelect.value;
+    const shown = filter === 'all' ? rows : rows.filter((r) => r.level === Number(filter));
+
+    if (rows.length === 0) {
+      aggregatesTableHolder.replaceChildren(
+        el('p', { class: 'muted' }, ['No codes yet — there is nothing to count.']),
+      );
+      return;
+    }
+    if (shown.length === 0) {
+      aggregatesTableHolder.replaceChildren(
+        el('p', { class: 'muted' }, [`No codes at level ${filter}.`]),
+      );
+      return;
+    }
+
+    const cell = (direct: number, subtree: number) =>
+      subtree > direct ? `${direct} (${subtree} with sub-codes)` : String(direct);
+
+    const table = el('table', { class: 'aggregates-table' }, [
+      el('thead', {}, [
+        el('tr', {}, [
+          el('th', { scope: 'col' }, ['Code']),
+          el('th', { scope: 'col' }, ['Level']),
+          el('th', { scope: 'col' }, ['This document']),
+          el('th', { scope: 'col' }, ['All documents']),
+        ]),
+      ]),
+      el(
+        'tbody',
+        {},
+        shown.map((row) =>
+          el('tr', {}, [
+            el('th', { scope: 'row' }, [row.path.join(': ')]),
+            el('td', {}, [String(row.level)]),
+            el('td', {}, [cell(row.docDirect, row.docSubtree)]),
+            el('td', {}, [cell(row.allDirect, row.allSubtree)]),
+          ]),
+        ),
+      ),
+    ]);
+    aggregatesTableHolder.replaceChildren(table);
+  }
+
+  function rebuildLevelOptions(): void {
+    if (!store.project) return;
+    const previous = levelSelect.value || 'all';
+    const depth = maxLevel(aggregateRows(store.project, doc.id));
+    levelSelect.replaceChildren(
+      el('option', { value: 'all' }, ['All levels']),
+      ...Array.from({ length: depth }, (_, i) =>
+        el('option', { value: String(i + 1) }, [`Level ${i + 1} only`]),
+      ),
+    );
+    levelSelect.value = [...levelSelect.options].some((o) => o.value === previous) ? previous : 'all';
+  }
+  levelSelect.addEventListener('change', () => renderAggregatesTable());
+
+  function openAggregates(): void {
+    if (video && !video.paused) video.pause();
+    rebuildLevelOptions();
+    renderAggregatesTable();
+    layout.hidden = true;
+    aggregatesSection.hidden = false;
+    aggregatesBtn.disabled = true;
+    aggregatesHeading.focus();
+  }
+
+  function closeAggregates(): void {
+    aggregatesSection.hidden = true;
+    layout.hidden = false;
+    aggregatesBtn.disabled = false;
+    aggregatesBtn.focus();
+  }
+  closeAggregatesBtn.addEventListener('click', () => closeAggregates());
+
   // ---------- layout + global keys ----------
 
-  main.append(
-    header,
-    el('div', { class: 'coding-layout' }, [
-      transcriptSection,
-      el('div', { class: 'side-column' }, [videoSection, codesSection]),
-    ]),
-  );
+  const layout = el('div', { class: 'coding-layout' }, [
+    transcriptSection,
+    el('div', { class: 'side-column' }, [videoSection, codesSection]),
+  ]);
+  main.append(header, layout, aggregatesSection);
 
   window.addEventListener(
     'keydown',
     (event) => {
       if (document.querySelector('dialog[open]')) return;
+      if (event.key === 'Escape' && !aggregatesSection.hidden) {
+        event.preventDefault();
+        closeAggregates();
+        return;
+      }
       if (event.altKey && !event.ctrlKey && !event.metaKey) {
         const focusTargets: Record<string, () => void> = {
           '1': () => {

@@ -106,6 +106,7 @@ their ancestor's color unless overridden.
 | Coding target | A quiet well under the Codes heading always states what's being coded: `Coding: 00:00:12 — "excerpt…"`. |
 | Dialogs | Native `<dialog>` + `showModal`: modal, Escape closes, focus returned to opener by the platform, labelled via `aria-labelledby`. The shortcuts dialog focuses its heading on open so reading starts at the top. |
 | Status messages | One polite `role="status"` live region for the whole app (assignments, saves, errors, imports). |
+| Aggregates view | "View aggregates" in the coding header swaps the entire coding layout for a native `<table>` (column headers `scope="col"`, code paths as `scope="row"` row headers) of per-code segment counts — this document and all documents, with subtree rollups in parentheses. A "Show levels" select filters to any single level. The table and the coding panels are never on screen together; Close (or Escape) restores coding and returns focus to the opener, and opening pauses video playback. |
 | Forms | Real `<label>`s throughout; hints wired with `aria-describedby`; native file inputs (hidden ones that are button-triggered are `display:none` + `aria-hidden`). |
 
 ARIA is used only where HTML has no equivalent: the listbox, the tree, the live
