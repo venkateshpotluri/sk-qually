@@ -1,11 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parseTranscript } from '../../src/parsers';
 
 /** The committed fixtures in public/testdata must always parse cleanly. */
 
-const dir = path.join(__dirname, '..', '..', 'public', 'testdata');
+const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'testdata');
 const read = (name: string) => fs.readFileSync(path.join(dir, name), 'utf8');
 
 describe('synthetic test fixtures', () => {
