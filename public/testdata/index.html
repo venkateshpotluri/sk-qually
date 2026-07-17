@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Qually test fixtures — downloads</title>
+    <style>
+      :root {
+        --bg: #faf9f7;
+        --raised: #ffffff;
+        --text: #1c1f24;
+        --muted: #565e6a;
+        --accent: #3d4db7;
+        --border: #dcd8d1;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #16181d;
+          --raised: #1e2127;
+          --text: #e8e9ec;
+          --muted: #a5adba;
+          --accent: #9daaf7;
+          --border: #363a43;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        font-size: 1rem;
+        line-height: 1.6;
+        background: var(--bg);
+        color: var(--text);
+      }
+      main { max-width: 44rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+      h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.015em; margin: 0 0 0.5rem; }
+      h2 { font-size: 1.15rem; font-weight: 625; margin-top: 2rem; }
+      p { margin: 0.35rem 0; }
+      .muted { color: var(--muted); font-size: 0.9rem; }
+      a { color: var(--accent); text-underline-offset: 0.2em; }
+      a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+      ul.files { list-style: none; margin: 0.75rem 0 0; padding: 0; display: grid; gap: 0.6rem; }
+      ul.files li {
+        background: var(--raised);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+      }
+      ul.files a { font-weight: 625; font-size: 1.02rem; }
+      .back { font-size: 0.9rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <nav aria-label="Breadcrumb" class="back"><a href="../">← Back to Qually</a></nav>
+      <h1>Qually test fixtures</h1>
+      <p>
+        Shared reference data for testing and bug reports. All timed fixtures use the same
+        ground truth: <strong>twelve segments of exactly ten seconds each</strong>, covering
+        0:00 to 2:00. Segment <em>n</em> starts at 10 × (n − 1) seconds.
+      </p>
+      <p class="muted">
+        To report a bug, name the file, the segment number, and what you did — for example:
+        “tone-check, segment 5, pressed Enter, heard four beeps instead of five.”
+      </p>
+
+      <h2>The tone-check set (use these together)</h2>
+      <ul class="files">
+        <li>
+          <a href="tone-check.vtt" download>tone-check.vtt</a>
+          <p class="muted">
+            Transcript for the shared timeline. Each cue states its own segment number, beep
+            count, and start time, with alternating Tester and Guide speakers.
+          </p>
+        </li>
+        <li>
+          <a href="tone-check.wav" download>tone-check.wav</a>
+          <p class="muted">
+            Two-minute audio: segment <em>n</em> begins with <em>n</em> short beeps, so you can
+            verify any seek by counting beeps. A soft background tone rises one semitone per
+            segment. About 1.9 megabytes. Attach it as this document’s media file.
+          </p>
+        </li>
+        <li>
+          <a href="segment-slides.webm" download>segment-slides.webm</a>
+          <p class="muted">
+            Two-minute silent video showing the digit of the current segment on a distinct
+            background color — the same timeline, for sighted verification. About 0.7 megabytes.
+          </p>
+        </li>
+      </ul>
+
+      <h2>Other transcripts</h2>
+      <ul class="files">
+        <li>
+          <a href="interview-onboarding.srt" download>interview-onboarding.srt</a>
+          <p class="muted">
+            Realistic eight-cue interview on the same ten-second grid (0:00–1:20) with
+            “Interviewer:” and “P2:” speaker prefixes. The tone-check audio also works with it.
+          </p>
+        </li>
+        <li>
+          <a href="focus-group-notes.txt" download>focus-group-notes.txt</a>
+          <p class="muted">
+            Timed plaintext with bracketed timestamps and four speakers; exercises the
+            plaintext parsing path.
+          </p>
+        </li>
+        <li>
+          <a href="reflection-memo.txt" download>reflection-memo.txt</a>
+          <p class="muted">
+            Untimed paragraphs; exercises the no-timestamp path — pressing Enter on these
+            segments should announce that there is no timestamp.
+          </p>
+        </li>
+        <li>
+          <a href="README.md" download>README.md</a>
+          <p class="muted">This documentation as a file, kept alongside the fixtures.</p>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>
